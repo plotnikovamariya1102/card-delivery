@@ -1,33 +1,24 @@
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selectors;
+import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.impl.DurationFormat;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.Selectors.withText;
-import static com.codeborne.selenide.Selectors.byText;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import  java.time.Duration;
-import java.util.Calendar;
+
+import java.time.LocalDate;
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 
 public class CardDeliveryTest {
-    public String ShouldSetDateMoreThreeDays(int numberDays) {
-        Calendar currentDate = Calendar.getInstance();
-        currentDate.add(Calendar.DATE, 3);
-        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        return dateFormat.format(currentDate.getTime());
-    }
-
-    public String ShouldSetDateLessThreeDays(int Days) {
-        Calendar currentDate = Calendar.getInstance();
-        currentDate.add(Calendar.DATE, 2);
-        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        return dateFormat.format(currentDate.getTime());
+    private LocalDate plusDays(int n) {
+        LocalDate date = LocalDate.now();
+        date = date.plusDays(n);
+        return date;
     }
 
     @Test
@@ -36,12 +27,14 @@ public class CardDeliveryTest {
         $("[placeholder='Город']").setValue("Екатеринбург");
         $("[placeholder='Дата встречи']").doubleClick();
         $("[placeholder='Дата встречи']").sendKeys(Keys.DELETE);
-        $("[placeholder='Дата встречи']").setValue(ShouldSetDateMoreThreeDays(3));
+        String newDate = plusDays(4).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[placeholder='Дата встречи']").setValue(newDate);
         $("[name='name']").setValue("Плотникова Мария");
         $("[name='phone']").setValue("+73512275695");
         $(".checkbox__box").click();
         $(".button__text").click();
         $(withText("Успешно")).shouldBe(Condition.visible, Duration.ofSeconds(15));
+        $(".notification__content").shouldBe(visible).shouldHave(exactText("Встреча успешно забронирована на " + newDate));
     }
 
 
@@ -51,10 +44,23 @@ public class CardDeliveryTest {
         $("[placeholder='Город']").setValue("Екатеринбург");
         $("[placeholder='Дата встречи']").doubleClick();
         $("[placeholder='Дата встречи']").sendKeys(Keys.DELETE);
-        $("[placeholder='Дата встречи']").setValue(ShouldSetDateLessThreeDays(2));
+        String newDate = plusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         $(".button__text").click();
-        $(withText("Заказ на выбранную дату невозможен")).shouldBe(visible);
+        $(withText("Неверно введена дата")).shouldBe(visible);
     }
+
+    @Test
+    void shouldOrderIsNotPossible() {
+        open("http://localhost:9999");
+        $("[placeholder='Город']").setValue("Екатеринбург");
+        $("[placeholder='Дата встречи']").doubleClick();
+        $("[placeholder='Дата встречи']").sendKeys(Keys.DELETE);
+        String newDate = plusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[placeholder='Дата встречи']").setValue(newDate);
+        $(".button__text").click();
+        $(withText( "Заказ на выбранную дату невозможен")).shouldBe(visible);
+    }
+
 
     @Test
     void shouldAnotherCity() {
@@ -72,7 +78,8 @@ public class CardDeliveryTest {
         $("[placeholder='Город']").setValue("Екатеринбург");
         $("[placeholder='Дата встречи']").doubleClick();
         $("[placeholder='Дата встречи']").sendKeys(Keys.DELETE);
-        $("[placeholder='Дата встречи']").setValue(ShouldSetDateMoreThreeDays(3));
+        String newDate = plusDays(4).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[placeholder='Дата встречи']").setValue(newDate);
         $("[name='name']").setValue("Plotnikova Mariya");
         $(".button__text").click();
         $(withText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.")).shouldBe(visible);
@@ -84,7 +91,8 @@ public class CardDeliveryTest {
         $("[placeholder='Город']").setValue("Екатеринбург");
         $("[placeholder='Дата встречи']").doubleClick();
         $("[placeholder='Дата встречи']").sendKeys(Keys.DELETE);
-        $("[placeholder='Дата встречи']").setValue(ShouldSetDateMoreThreeDays(3));
+        String newDate = plusDays(4).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[placeholder='Дата встречи']").setValue(newDate);
         $("[name='name']").setValue("Плотникова Мария");
         $("[name='phone']").setValue("83512275695");
         $(".button__text").click();
@@ -97,7 +105,8 @@ public class CardDeliveryTest {
         $("[placeholder='Город']").setValue("Екатеринбург");
         $("[placeholder='Дата встречи']").doubleClick();
         $("[placeholder='Дата встречи']").sendKeys(Keys.DELETE);
-        $("[placeholder='Дата встречи']").setValue(ShouldSetDateMoreThreeDays(3));
+        String newDate = plusDays(4).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[placeholder='Дата встречи']").setValue(newDate);
         $("[name='name']").setValue("Плотникова Мария");
         $("[name='phone']").setValue("+7983512275695");
         $(".button__text").click();
@@ -117,7 +126,8 @@ public class CardDeliveryTest {
         $("[placeholder='Город']").setValue("Екатеринбург");
         $("[placeholder='Дата встречи']").doubleClick();
         $("[placeholder='Дата встречи']").sendKeys(Keys.DELETE);
-        $("[placeholder='Дата встречи']").setValue(ShouldSetDateMoreThreeDays(3));
+        String newDate = plusDays(4).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        $("[placeholder='Дата встречи']").setValue(newDate);
         $("[name='name']").setValue("Плотникова Мария");
         $("[name='phone']").setValue("+73512275695");
         $(".button__text").click();
